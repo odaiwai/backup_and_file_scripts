@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use DateTime;
 
 # 20150710: This should really check if the backup drive is available
 # 20151121: changed to perl
@@ -8,12 +9,16 @@ use warnings;
 # 	    with the parent ID of the subvolumes
 # 20160828: try to enhance the subvolume backups to work properly
 # 20160929: check for the existence of the /backups volume
+# 20161208 - Add date functionality
 #
 my $for_real = 1;
-my $verbose = 0;
+my $verbose = 1;
 my $first_run = 0;
 my $local = "home";
 my $remote = "backup";
+my $localTZ = "Asia/Hong_Kong";
+my $date = DateTime->now(time_zone => $localTZ);
+my $timestamp = $date->strftime("%Y%m%d_%H%M");
 
 my $backup_vol_present = `df | grep backup | wc -l`;
 if ($backup_vol_present == 0) {
@@ -60,16 +65,19 @@ if ( -d ("/$local/BACKUP") && -d "/$remote/BACKUP") {
 	my $result = do_cmd("btrfs subvolume snapshot -r /$local /$local/BACKUP-new");
 	$result = do_cmd("sync");
 	$result = do_cmd("btrfs send -p /$local/BACKUP /$local/BACKUP-new | btrfs receive /$remote");
+	$result = do_cmd("btrfs subvolume list /$local");
 	if ( (-d "/$local/BACKUP") and (-d "/$local/BACKUP-new")) { 
 		# clean up and increment our backup
 		printlog ($log, "3.1.1 Local Backup has old and new versions: cleaning up /$local");
 		$result = do_cmd("btrfs subvolume delete /$local/BACKUP");
 		$result = do_cmd("mv /$local/BACKUP-new /$local/BACKUP");
 	}
+	$result = do_cmd("btrfs subvolume list /$remote");
 	if ( (-d "/$remote/BACKUP") and (-d "/$remote/BACKUP-new")) { 
 		# and clean it up from the backup as well
 		printlog ($log, "3.1.2 Remote has old and new backups: cleaning up /$remote...");
-		$result = do_cmd("btrfs subvolume delete /$remote/BACKUP");
+		$result = do_cmd("btrfs subvolume snapshot -r /$remote/BACKUP /$remote/BACKUP.$timestamp");
+	 	$result = do_cmd("btrfs subvolume delete /$remote/BACKUP");
 		$result = do_cmd("mv /$remote/BACKUP-new /$remote/BACKUP");
 	}
 }

@@ -27,7 +27,9 @@ my $cp_opts="au";
 # use rsync for the ext4
 foreach my $dir (@ext4dirs) {
 	print "rsync $rsync_options /$dir /backup/$dir\n";
-	my $result = `rsync $rsync_options /$dir /backup/$dir`;
+	my $result = `mkdir -p /backup/$dir`;
+	$result = `rsync $rsync_options /$dir /backup/$dir`;
+	print "$result\n";
 }
 
 
