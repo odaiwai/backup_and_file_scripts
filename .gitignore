@@ -1,0 +1,6 @@
+# Git Ignore list
+*.log
+*.sqlite
+*~
+*.out
+
