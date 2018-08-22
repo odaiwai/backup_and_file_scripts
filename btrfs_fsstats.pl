@@ -11,18 +11,22 @@ use warnings;
 
 my @pools = `mount | grep btrfs | cut -d" " -f3`;
 foreach my $pool (@pools) {
-		chomp $pool;
-		print "Pool: $pool\n";
-		my @results = `btrfs fi df -b $pool`;
-		foreach my $line (@results) {
-				chomp $line;
-				if ($line =~ /(Data|System|Metadata), (RAID[0-9]|single): total=([0-9]+), used=([0-9]+)/ ) {
-						my $type = $1;
-						my $format = $2;
-						my $total = $3;
-						my $used = $4;
-						my $pct = ($used / $total) *100;
-						print "$type, $format, $total, $used, " . sprintf("%0.2f", $pct) . "%\n";
-				}
-		}
+    chomp $pool;
+    print "Pool: $pool\n";
+    my @results = `btrfs fi df -b $pool`;
+    foreach my $line (@results) {
+        chomp $line;
+        if ( $line
+            =~ /(Data|System|Metadata), (RAID[0-9]|single): total=([0-9]+), used=([0-9]+)/
+            )
+        {
+            my $type   = $1;
+            my $format = $2;
+            my $total  = $3;
+            my $used   = $4;
+            my $pct    = ( $used / $total ) * 100;
+            print "$type, $format, $total, $used, "
+                . sprintf( "%0.2f", $pct ) . "%\n";
+        }
+    }
 }
