@@ -16,7 +16,7 @@ use DateTime;
 #   - trim the local snspshots if required
 #
 my $for_real = 1;
-my $verbose = 1;
+my $verbose = 0;
 my $first_run = 0;
 my $local = "/home";   # Default
 my $remote = "/backup";# Default
@@ -77,7 +77,7 @@ printlog ($log, "2. Check if $last_backup exists and is on $remote.");
 if ( (-d $last_backup) && !(-d $last_remote) ) {
     #Copy to $remote
     printlog( $log, "\t2.1 Backup only exists locally: sending...");
-    my $result = do_cmd("btrfs send $last_backup | btrfs receive $remote");
+    my $result = do_cmd("btrfs send -q $last_backup | btrfs receive $remote");
 } else {
     printlog ($log, "\t2.1.1 $last_remote exists.");
 }
@@ -90,7 +90,7 @@ if ( -d ($last_backup) && -d ("$last_remote") ) {
     printlog ($log, "\t3.1 Local and Remote Backups Exist: making incremental btrfs backup of $local...");
     my $result = do_cmd("btrfs subvolume snapshot -r $local $this_backup");
     $result = do_cmd("sync");
-    $result = do_cmd("btrfs send -p $last_backup $this_backup | btrfs receive $remote");
+    $result = do_cmd("btrfs send -q -p $last_backup $this_backup | btrfs receive $remote");
     $result = do_cmd("btrfs subvolume list $local");
     if ( (-d $last_backup) and (-d $this_backup)) {
         # clean up and increment our backup

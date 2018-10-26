@@ -5,6 +5,7 @@ use warnings;
 # 20150710: This should really check if the backup drive is available
 # 20151121: changed to perl
 
+my $verbose = 0;
 my $dry_run = 0;
 my @ext4dirs = qw(etc var/log var/www var/named root boot usr/local var/spool/cron var/spool/mail);
 
@@ -26,21 +27,21 @@ my $cp_opts="au";
 #shopt -s extglob ?
 # use rsync for the ext4
 foreach my $dir (@ext4dirs) {
-	print "rsync $rsync_options /$dir /backup/$dir\n";
+	print "rsync $rsync_options /$dir /backup/$dir\n" if $verbose;
 	my $result = `mkdir -p /backup/$dir`;
 	$result = `rsync $rsync_options /$dir /backup/$dir`;
-	print "$result\n";
+	print "$result\n" if $verbose;
 }
 
 
 sub do_cmd {
 	my $command = shift;
-	print "$command\n";
+	print "$command\n" if $verbose;
 	my $result = `time $command`;
-	print $result;
+	print $result if $verbose;
 	return $result;
 }
-print "Finished.\n";
+print "Finished.\n" if $verbose;
 #for DIR in $DIRS
 #do
 #	# Basic Method - using cp
