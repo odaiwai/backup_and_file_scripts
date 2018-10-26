@@ -26,10 +26,6 @@ foreach my $filename (keys %filenames) {
 	}
 }
 sub filename_from_line {
-	# lines look like:
-	# Jul 15 17:17:39 gizmo journal[27439]: Couldn't create PopplerDocument from uri:'file:///home/odaiwai/Documents/Transport_Planning/2005_nsbt/invoices/nsbt-invoice-001.pdf', PDF document is damaged
-	# Jul 15 17:17:39 gizmo journal[27439]: Couldn't create PopplerDocument from uri:'file:///home/odaiwai/Documents/mobile_phones/20111205_collect_phone_bills/pdf/20130704_60516148_detailed_call_record.pdf', PDF document is damaged
-	# Jul 15 17:17:41 gizmo journal[27439]: Couldn't create PopplerDocument from uri:'file:///home/odaiwai/Documents/Transport_Planning/20130901_palestine_masterplan/04_data_collections/ftp.systematica.net/01_DATA%20WORK/01%20-%20CV%20(Non%20Key%20Experts)/12_Ibtisam%20Husary/BA_accounting_major_certificates.pdf', PDF document is damaged
 	my $line = shift;
 	my $filename = 'nil';
 	#print "\t$line\n" if $verbose;
