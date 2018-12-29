@@ -68,6 +68,5 @@ sub list_all_snapshots {
 			push @snapshots, "$filesystem/$snapshot";
 		}
 	}
-	#
 	return @snapshots;
 }
