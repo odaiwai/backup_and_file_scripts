@@ -18,3 +18,4 @@ remote_list
 remote_list_with_size
 
 restore_list\.txt
+scrub_errors.txt

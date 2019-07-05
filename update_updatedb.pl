@@ -60,7 +60,8 @@ sub list_all_snapshots {
 	my $filesystem = shift;
 	my @snapshots;
 	
-	my @subvolumes = `sudo btrfs subvolume list $filesystem`;
+	# We're running as root from Cron - no sudo
+	my @subvolumes = `btrfs subvolume list $filesystem`;
 	foreach my $subvolume (@subvolumes) {
 		if ( $subvolume =~ /^ID ([0-9]+) gen ([0-9]+) top level ([0-9]+) path (.*)$/ ) {
 			my ($id, $gen, $root, $snapshot) = ($1, $2, $3, $4);
