@@ -22,15 +22,20 @@ my $rsync_options="--progress --stats --recursive --compress --times --perms --l
 #my $rsync_options="--stats --recursive --compress --times --perms --links --human-readable --exclude=\"[Dd]ownloads\"";
 # rsync is incredibly slow for large copies.  Probably need more RAM
 $rsync_options .= " --dry-run" if $dry_run;
+$rsync_options .= " -v" if $verbose;
 my $cp_opts="au";
 
 #shopt -s extglob ?
 # use rsync for the ext4
 foreach my $dir (@ext4dirs) {
-	print "rsync $rsync_options /$dir /backup/$dir\n" if $verbose;
-	my $result = `mkdir -p /backup/$dir`;
-	$result = `rsync $rsync_options /$dir /backup/$dir`;
-	print "$result\n" if $verbose;
+	my @cmds;
+	push @cmds, "mkdir -p /backup/$dir";
+	push @cmds, "rsync $rsync_options /$dir /backup/";
+	for my $cmd (@cmds) {
+		print "$cmd\n" if $verbose;
+		my $result = `$cmd`;
+		print "$result\n" if $verbose;
+	}
 }
 
 
