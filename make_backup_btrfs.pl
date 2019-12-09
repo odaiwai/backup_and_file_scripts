@@ -26,9 +26,10 @@ my $date = DateTime->now(time_zone => $localTZ);
 my $timestamp = $date->strftime("%Y%m%d_%H%M");
 
 while (my $arg = shift @ARGV) {
-    if ( $arg eq "--local" ) { $local = shift;}
-    if ( $arg eq "--remote" ) { $remote = shift;}
-    if ( $arg eq "--prefix" ) { $prefix = shift;}
+    if ( $arg =~ /local/ ) { $local = shift;}
+    if ( $arg =~ /remote/ ) { $remote = shift;}
+    if ( $arg =~ /prefix/ ) { $prefix = shift;}
+    if ( $arg =~ /verbose/ ) { $verbose = 1;}
 }
 
 print "Backing up from $local to $remote as $prefix\n" if $verbose;
