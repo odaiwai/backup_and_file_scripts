@@ -12,7 +12,16 @@ my $verbose = 1;
 my $sudo = '';
 my $maximum_size = 0;
 
-my @filesystems = qw/home/;
+my @filesystems = @ARGV;
+
+# if filesystems not specified look at all mounted ones
+if ( $#filesystems < 0 ) {
+	open ( my $fh, "-|", "mount | grep btrfs | cut -d\" \" -f3");
+	while ( my $fs = <$fh> ) {
+		chomp $fs;
+		push @filesystems, $fs;
+	}
+}
 for my $filesystem (@filesystems) {
 	my @snapshots = snapshots("/$filesystem");
 }
