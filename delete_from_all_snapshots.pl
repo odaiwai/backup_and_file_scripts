@@ -31,27 +31,25 @@ for my $snapshot (@snapshots) {
 }
 
 # find all instances of the file
-# run duperemove on the file
+# delete the snapshots only - not the main file
 for my $file (@files) {	
 	my $path = `realpath $file | sed 's/\\$filesystem//g;'`;
 	chomp $path;
 	print "Main File: $filesystem$path\n";
 	my @file_versions;
-	push @file_versions, "$filesystem$path"; 
 	for my $snapshot (@snapshots) {
 		chomp $snapshot;
 		push @file_versions, "$filesystem/$snapshot$path";
 		print "\t$filesystem/$snapshot$path\n" if $verbose;
 	}
 	my $allfiles = join " ", @file_versions;
-	print "Running duperemove... on $allfiles\n";
-	open ( my $fh, "-", "duperemove -r -d $allfiles") or die "Can't open command! $!";
-	while (my $line = <$fh>) {
-		chomp $line;
-		print "$line \n" if $verbose;
+	print "Delete $allfiles\n";
+	for my $version (@file_versions) {
+		my $cmd = "rm -rf $version";
+		print "$cmd\n" if $verbose;
+		my $result = do_cmd($cmd);
+		print "$result\n" if $verbose;
 	}
-	close $fh;
-	print "$result\n" if $verbose;
 }
 
 # Set snapshots to RO
@@ -59,7 +57,7 @@ for my $snapshot (@snapshots) {
 	my $result = set_property($filesystem, "ro true", $snapshot);
 }
 
-
+### Subs
 sub get_list_of_snapshots {
 	my $filesystem = shift;
 	my @snapshots;
@@ -68,7 +66,7 @@ sub get_list_of_snapshots {
 		chomp $snapshot;
 		push @snapshots, $snapshot;
 	}
-	close_$fh;
+	close $fh;
 	return @snapshots;
 }
 
@@ -84,6 +82,8 @@ sub set_property {
 sub do_cmd {
 	my $cmd = shift;
 	#print "$cmd\n" if $verbose;
-	my $result = `$cmd` if $for_real;
+	my $result = "NULL"; 
+	$result = `$cmd` if $for_real;
+	chomp $result;
 	return $result;
 }
