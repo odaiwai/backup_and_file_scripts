@@ -45,13 +45,13 @@ for my $file (@files) {
 	}
 	my $allfiles = join " ", @file_versions;
 	print "Running duperemove... on $allfiles\n";
-	open ( my $fh, "-", "duperemove -r -d $allfiles") or die "Can't open command! $!";
+	open ( my $fh, "-|", "duperemove -r -d $allfiles") or die "Can't open command! $!";
 	while (my $line = <$fh>) {
 		chomp $line;
 		print "$line \n" if $verbose;
 	}
 	close $fh;
-	print "$result\n" if $verbose;
+	#print "$result\n" if $verbose;
 }
 
 # Set snapshots to RO
@@ -68,7 +68,7 @@ sub get_list_of_snapshots {
 		chomp $snapshot;
 		push @snapshots, $snapshot;
 	}
-	close_$fh;
+	close $fh;
 	return @snapshots;
 }
 
