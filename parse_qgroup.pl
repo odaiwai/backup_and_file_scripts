@@ -76,7 +76,10 @@ sub snapshots {
     open ( $fh, "-|", $cmd) or die "can't execute command: $cmd.";
     while (my $line = <$fh>) {
         chomp $line;
-        #print "|$line|\n" if $verbose;
+        print "|$line|\n" if $verbose;
+		if ( $line =~ /ERROR\: can't list qgroups: quotas not enabled/ ) {
+			die "ERROR: can't list qgroups: quotas not enabled\n";
+		}
         #if ($line =~ /^([0-9]+)[\/]([0-9]+)\s+([0-9.]+)([A-Za-z]+)\s+([0-9.]+)([A-Za-z]+)$/) {
         #my ($parent, $id, $app_size, $app_size_units, $excl_size, $excl_size_units) = ($1, $2, $3, $4, $5, $6);
         #print "$parent->$id: $excl_size $excl_size_units ($app_size $app_size_units)\n" if $verbose;
@@ -90,7 +93,7 @@ sub snapshots {
         }
     }
     close $fh;
-    foreach my $id (sort keys %snapshots) {
+    foreach my $id (sort {$snapshots{$a}->{id}<=>$snapshots{$b}->{id}} keys %snapshots) {
             if (exists ($snapshots{$id})) {
                     #       print Dumper($snapshots{$id});
                 print "$snapshots{$id}->{parent}->$snapshots{$id}->{id} ";
@@ -148,6 +151,7 @@ sub new {
         app_size => shift
     };
     bless $self, $class;
+	#$self->{id} = sprintf("%06d", $self->{id});
     return $self;
 }
 
