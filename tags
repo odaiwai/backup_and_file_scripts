@@ -1,0 +1,77 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+FILES	Makefile	/^FILES = $(shell ls | grep -E "\\.(pl|sh)$$" )$/;"	m
+Filesystem	parse_qgroup.py	/^class Filesystem:$/;"	c
+SOURCE	Makefile	/^SOURCE = $(shell pwd)$/;"	m
+Snapshot	parse_qgroup.pl	/^package Snapshot;$/;"	p
+Snapshot	parse_qgroup.py	/^class Snapshot:$/;"	c
+TARGET	Makefile	/^TARGET = \/usr\/local\/bin$/;"	m
+__init__	parse_qgroup.py	/^    def __init__(self, label, uuid, mountpoint):$/;"	m	class:Filesystem
+__init__	parse_qgroup.py	/^    def __init__(self, snap_id, parent, groupid, path, excl_size, refr_size):$/;"	m	class:Snapshot
+__str__	parse_qgroup.py	/^    def __str__(self):$/;"	m	class:Filesystem	file:
+__str__	parse_qgroup.py	/^    def __str__(self):$/;"	m	class:Snapshot	file:
+array_from_query	compare_lists.pl	/^sub array_from_query {$/;"	s
+array_from_query	prepare_restore_dbase.pl	/^sub array_from_query {$/;"	s
+build_tables_from_file	compare_lists.pl	/^sub build_tables_from_file {$/;"	s
+category_from_filename	compare_lists.pl	/^sub category_from_filename {$/;"	s
+category_from_filename	prepare_restore_dbase.pl	/^sub category_from_filename {$/;"	s
+check_status	enable_quotas.pl	/^sub check_status {$/;"	s
+checksum_from_filepath	compare_lists.pl	/^sub checksum_from_filepath {$/;"	s
+comma_separated_thousands	compare_lists.pl	/^sub comma_separated_thousands {$/;"	s
+copy_dirs	restore_home.pl	/^sub copy_dirs {$/;"	s
+dbdo	compare_lists.pl	/^sub dbdo {$/;"	s
+dbdo	prepare_restore_dbase.pl	/^sub dbdo {$/;"	s
+dict_of_snapshots	parse_qgroup.py	/^def dict_of_snapshots(filesystem):$/;"	f
+do_cmd	dedupe_a_file.pl	/^sub do_cmd {$/;"	s
+do_cmd	delete_from_all_snapshots.pl	/^sub do_cmd {$/;"	s
+do_cmd	make_backup_btrfs.pl	/^sub do_cmd {$/;"	s
+do_cmd	make_backup_ext4.pl	/^sub do_cmd {$/;"	s
+drop_all_tables	compare_lists.pl	/^sub drop_all_tables {$/;"	s
+drop_all_tables	prepare_restore_dbase.pl	/^sub drop_all_tables {$/;"	s
+escape_filepath	compare_lists.pl	/^sub escape_filepath {$/;"	s
+fileinfo	show_all_versions.pl	/^sub fileinfo {$/;"	s
+filename	parse_qgroup.py	/^    filename = sys.argv.pop(0)$/;"	v
+filename_and_basedir_from_filepath	compare_lists.pl	/^sub filename_and_basedir_from_filepath {$/;"	s
+filename_from_line	restore_damaged_documents.pl	/^sub filename_from_line {$/;"	s
+filesystems	parse_qgroup.pl	/^sub filesystems {$/;"	s
+filesystems	parse_qgroup.py	/^        filesystems = return_btrfs_filesystems()$/;"	v
+filesystems	parse_qgroup.py	/^    filesystems = []$/;"	v
+get_list_of_snapshots	dedupe_a_file.pl	/^sub get_list_of_snapshots {$/;"	s
+get_list_of_snapshots	delete_from_all_snapshots.pl	/^sub get_list_of_snapshots {$/;"	s
+get_md5sum_for_filename	compare_lists.pl	/^sub get_md5sum_for_filename {$/;"	s
+get_md5sum_for_filename	prepare_restore_dbase.pl	/^sub get_md5sum_for_filename {$/;"	s
+hash_from_query	compare_lists.pl	/^sub hash_from_query {$/;"	s
+hash_from_query	prepare_restore_dbase.pl	/^sub hash_from_query {$/;"	s
+list_all_snapshots	show_all_versions.pl	/^sub list_all_snapshots {$/;"	s
+list_all_snapshots	update_updatedb.pl	/^sub list_all_snapshots {$/;"	s
+local_path_filename_from_remote_filename	compare_lists.pl	/^sub local_path_filename_from_remote_filename {$/;"	s
+local_path_filename_from_remote_filename	prepare_restore_dbase.pl	/^sub local_path_filename_from_remote_filename {$/;"	s
+main	parse_qgroup.py	/^def main():$/;"	f
+make_db	compare_lists.pl	/^sub make_db {$/;"	s
+make_db	prepare_restore_dbase.pl	/^sub make_db {$/;"	s
+new	parse_qgroup.pl	/^sub new {$/;"	s
+os	parse_qgroup.py	/^import os$/;"	i
+pretty_bytes	btrfs_fsstats.pl	/^sub pretty_bytes {$/;"	s
+pretty_bytes	parse_qgroup.pl	/^sub pretty_bytes {$/;"	s
+pretty_bytes	parse_qgroup.py	/^def pretty_bytes(size, *scale):$/;"	f
+printlog	make_backup_btrfs.pl	/^sub printlog {$/;"	s
+querydb	compare_lists.pl	/^sub querydb {$/;"	s
+querydb	prepare_restore_dbase.pl	/^sub querydb {$/;"	s
+re	parse_qgroup.py	/^import re$/;"	i
+return_all_backups	make_backup_btrfs.pl	/^sub return_all_backups {$/;"	s
+return_btrfs_filesystems	parse_qgroup.py	/^def return_btrfs_filesystems():$/;"	f
+return_latest_backup	make_backup_btrfs.pl	/^sub return_latest_backup {$/;"	s
+row_from_query	compare_lists.pl	/^sub row_from_query {$/;"	s
+row_from_query	prepare_restore_dbase.pl	/^sub row_from_query {$/;"	s
+sanitise_line_for_input	compare_lists.pl	/^sub sanitise_line_for_input {$/;"	s
+set_property	dedupe_a_file.pl	/^sub set_property {$/;"	s
+set_property	delete_from_all_snapshots.pl	/^sub set_property {$/;"	s
+snapshots	parse_qgroup.pl	/^sub snapshots {$/;"	s
+subprocess	parse_qgroup.py	/^import subprocess$/;"	i
+sys	parse_qgroup.py	/^import sys$/;"	i
+tk	parse_qgroup.py	/^import tkinter as tk$/;"	i
+usage	btrfs_diff.sh	/^usage() { echo $@ >&2; echo "Usage: $0 <older-snapshot> <newer-snapshot>" >&2; exit 1; }$/;"	f
