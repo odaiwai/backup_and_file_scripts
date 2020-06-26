@@ -26,15 +26,39 @@ while ( !$all_scrubs_finished ) {
 			print "\tNo Change.\n";
 		} else {
 			$scrub_statuses{$pool} = $scrub_status;
-			print "\tScrub status changed on $pool, enabling quotas...";
-			my $result = `btrfs quota enable $pool`;
-			print "\n";
+			my $no_quota = check_status( "btrfs qgroup show", "quotas not enabled", $pool);
+			print "\tScrub status changed on $pool, ";
+			if ( $no_quota ) {
+				print "enabling quotas...";			
+				my $result = `btrfs quota enable $pool`;
+				print "\n";
+			} else {
+				print "quota already_enabled. Doing nothing.\n";
+			}
 		}
 	}
 	if ( $all_scrub_status == $num_pools) {
 		$all_scrubs_finished = 1;
 	} else {
 		# take a nap, and check again...
-		sleep 60;
+		my $sleep_time = 15 * 60; # 15 mins
+		sleep $sleep_time;
 	}
+}
+
+sub check_status {
+	my $command = shift;
+	my $test = shift;
+	my $pool = shift;
+	
+	my $status = 0;
+	my @results = `$command $pool 2>&1`; 
+	foreach my $line (@results) {
+		chomp $line;
+		if ( $line =~ /$test/ ) {
+			$status = 1;
+		}
+	}
+
+	return $status;
 }
