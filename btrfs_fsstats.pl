@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use Data::Dumper;
 
 # Script to calculate the usage rates on the btrfs filesystems
 # 20180718 Dave O'Brien
@@ -30,7 +31,7 @@ foreach my $pool (@pools) {
 			$pool_mounts{$pool} = $device;
 			#print "$device: ($mount) $total/$used = $used_pct\n"; 
 		}
-        if ( $line =~ /(Data|System|Metadata), (RAID[0-9]|single): total=([0-9]+), used=([0-9]+)/ ) {
+        if ( $line =~ /(Data|System|Metadata), (RAID[0-9]|single|DUP): total=([0-9]+), used=([0-9]+)/ ) {
 	            my $type   = $1;
 	            my $format = $2;
 	            my $total  = $3;
@@ -42,7 +43,9 @@ foreach my $pool (@pools) {
 				$pool_type_bal{"$pool\_$type"} = sprintf( "%0.1f", $pct) . "%";
         }
     }
+	#print Dumper(%pool_type_used);
 	my $total_used = $pool_type_used{$pool."_Data"} + $pool_type_used{$pool."_Metadata"} + $pool_type_used{$pool."_System"};
+	#print Dumper(%pool_type_bal);
 	my $pool_type_bal = join "/", ($pool_type_bal{$pool.'_Data'}, $pool_type_bal{$pool.'_Metadata'}, $pool_type_bal{$pool.'_System'}); 
 	my $pool_Data_pct = sprintf ("%0.1f", ( 100 * $pool_type_size{$pool."_Data"} / $pool_size{$pool} )) . "%";
 	my $pool_Meta_pct = sprintf ("%0.1f", ( 100 * $pool_type_size{$pool."_Metadata"} / $pool_size{$pool} )) . "%";
