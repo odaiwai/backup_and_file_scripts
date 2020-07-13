@@ -1,6 +1,5 @@
 #!/bin/bash
 
-POOLS=`mount| grep btrfs | cut -d' ' -f3`
 
 PASSES=100
 PAUSE=60
@@ -16,6 +15,8 @@ while [[ true ]]
 do
 	clear
 	date
+	# Rescan the pools inside the loop
+	POOLS=`mount| grep btrfs | cut -d' ' -f3`
 	df -h $POOLS
 	/home/odaiwai/src/backup_and_file_scripts/btrfs_fsstats.pl
 	for POOL in $POOLS
