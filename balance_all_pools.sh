@@ -1,13 +1,14 @@
 #!/bin/bash
 
 
-POOLS=`mount| grep btrfs | cut -d' ' -f3 | tr '\n' ' '`
 
 # defaults
 LIMIT=1
 PASSES=1
 PAUSE=10
+USAGE=100
 FOR_REAL=1
+POOLS=""
 I_AM=`whoami`
 
 # Get the arguments in pairs
@@ -18,6 +19,11 @@ do
 	case $key in
 		-l|--limit)
 			LIMIT="$2"
+			shift
+			shift
+			;;
+		-u|--usage)
+			USAGE="$2"
 			shift
 			shift
 			;;
@@ -35,20 +41,29 @@ do
 			FOR_REAL=0
 			shift
 			;;
+		\/*)
+			POOLS="$key $POOLS"
+			shift
+			;;
 	*)
 			shift
 			;;
 	esac
 done
+echo $POOLS
+if [ -z $POOLS ]
+then
+	POOLS=`mount| grep btrfs | cut -d' ' -f3 | tr '\n' ' '`
+fi
 
 SUDO="sudo"
-if [[ $I_AM = "root" ]]
+if [ $I_AM = "root" ]
 then
 		SUDO=""
 fi
 
 # Do the deed
-echo "Performing $PASSES balances on [$POOLS] (limit $LIMIT) with $PAUSE second pauses as user '$I_AM'. Dry Run Status: $FOR_REAL"
+echo "Performing $PASSES balances on [$POOLS] (limit $LIMIT usage $USAGE) with $PAUSE second pauses as user '$I_AM'. Dry Run Status: $FOR_REAL"
 date
 
 for PASS in `seq 1 $PASSES`
@@ -56,14 +71,20 @@ do
 	for POOL in $POOLS
 	do
 		echo "Balancing $POOL, Pass $PASS/$PASSES"
-		CMD="$SUDO btrfs balance start -v $POOL -dlimit=$LIMIT -mlimit=$LIMIT"
+		CMD="$SUDO btrfs balance start -v $POOL -dlimit=$LIMIT -mlimit=$LIMIT -dusage=$USAGE -musage=$USAGE"
+		NO_BALANCE=`$SUDO btrfs balance status $POOL | grep "No balance found" | wc -l`;
 		date
 		echo "$CMD"
-		if [[ $FOR_REAL ]]
+		if [ $FOR_REAL -eq 1 ]
 		then
-			time $CMD
+			if [ $NO_BALANCE -eq 1 ]
+			then
+				time $CMD
+			else
+				echo "Balance already running on $POOL."
+			fi
 		fi
-		echo "Status: $?, sleeping for $PAUSE seconds..."
-		sleep $PAUSE
 	done
+	echo "Status: $?, sleeping for $PAUSE seconds..."
+	sleep $PAUSE
 done
