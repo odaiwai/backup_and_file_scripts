@@ -20,6 +20,7 @@ use utf8;
 
 my @files = @ARGV;
 my $filesystem = "/home";
+my $alt_filesystem = "/backup";
 my @snapshots = get_list_of_snapshots($filesystem);
 my $verbose = 1;
 my $for_real = 1;

@@ -50,8 +50,11 @@ foreach my $pool (@pools) {
 	my $pool_Data_pct = sprintf ("%0.1f", ( 100 * $pool_type_size{$pool."_Data"} / $pool_size{$pool} )) . "%";
 	my $pool_Meta_pct = sprintf ("%0.1f", ( 100 * $pool_type_size{$pool."_Metadata"} / $pool_size{$pool} )) . "%";
 	my $pool_Syst_pct = sprintf ("%0.1f", ( 100 * $pool_type_size{$pool."_System"} / $pool_size{$pool} )) . "%";
+	my $pretty_data = pretty_bytes($pool_type_size{$pool."_Data"});
+	my $pretty_meta = pretty_bytes($pool_type_size{$pool."_Metadata"});
+	my $pretty_syst = pretty_bytes($pool_type_size{$pool."_System"});
 	my $pretty_total = pretty_bytes($total_used);
-	print "$pool\t($pool_mounts{$pool}) $pretty_total Data/Meta/Sys: ($pool_Data_pct/$pool_Meta_pct/$pool_Syst_pct) Balanced:($pool_type_bal)\n"; 
+	print "$pool\t($pool_mounts{$pool}) $pretty_total Data/Meta/Sys: ($pretty_data/$pretty_meta/$pretty_syst) ($pool_Data_pct/$pool_Meta_pct/$pool_Syst_pct) Balanced:($pool_type_bal)\n"; 
 }
 
 sub pretty_bytes {

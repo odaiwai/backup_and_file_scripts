@@ -19,6 +19,7 @@ array_from_query	prepare_restore_dbase.pl	/^sub array_from_query {$/;"	s
 build_tables_from_file	compare_lists.pl	/^sub build_tables_from_file {$/;"	s
 category_from_filename	compare_lists.pl	/^sub category_from_filename {$/;"	s
 category_from_filename	prepare_restore_dbase.pl	/^sub category_from_filename {$/;"	s
+check_status	check_scrub_status.pl	/^sub check_status {$/;"	s
 check_status	enable_quotas.pl	/^sub check_status {$/;"	s
 checksum_from_filepath	compare_lists.pl	/^sub checksum_from_filepath {$/;"	s
 comma_separated_thousands	compare_lists.pl	/^sub comma_separated_thousands {$/;"	s
