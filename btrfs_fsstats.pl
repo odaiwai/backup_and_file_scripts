@@ -18,9 +18,32 @@ my %pool_type_size;
 my %pool_type_used;
 my %pool_type_bal;
 
+# Get the list of all devices in each pool
+my ($pool_devices_ref, $all_pool_devs) = devices_in_pools(@pools);
+my %pool_devices = %$pool_devices_ref;	# $pool_devices{$pool}{N} = device N in pool $pool
+#print Dumper(\%pool_devices);
+#print Dumper($all_pool_devs);
+
+#get the temperates for each device (includes non pool devices)
+my $drive_temps_ref = drive_temps($all_pool_devs);
+my %drive_temps = %$drive_temps_ref;
+#print Dumper(\%drive_temps);
+
+
 foreach my $pool (@pools) {
     chomp $pool;
 	#print "Pool: $pool\n";
+	
+	# Make the string of temperatures
+	my @pool_temps;
+	for my $dev (split(' ', $pool_devices{$pool})) {
+		push @pool_temps, $drive_temps{$dev};
+
+	}
+	#print Dumper(\@pool_temps);
+	my $pool_temps = join('/', @pool_temps);
+	#print Dumper($pool_temps);
+	
     my @results = `df -B1 $pool; btrfs fi df -b $pool`;
     foreach my $line (@results) {
         chomp $line;
@@ -54,7 +77,7 @@ foreach my $pool (@pools) {
 	my $pretty_meta = pretty_bytes($pool_type_size{$pool."_Metadata"});
 	my $pretty_syst = pretty_bytes($pool_type_size{$pool."_System"});
 	my $pretty_total = pretty_bytes($total_used);
-	print "$pool\t($pool_mounts{$pool}) $pretty_total Data/Meta/Sys: ($pretty_data/$pretty_meta/$pretty_syst) ($pool_Data_pct/$pool_Meta_pct/$pool_Syst_pct) Balanced:($pool_type_bal)\n"; 
+	print "$pool\t($pool_mounts{$pool}) $pretty_total Data/Meta/Sys: ($pretty_data/$pretty_meta/$pretty_syst) ($pool_Data_pct/$pool_Meta_pct/$pool_Syst_pct) Balanced:($pool_type_bal), $pool_temps\n"; 
 }
 
 sub pretty_bytes {
@@ -81,4 +104,40 @@ sub pretty_bytes {
 	}
 	return $new_size;
 }
-
+sub devices_in_pools {
+	# return the devices in a given pool
+	my @pools = @_;
+	my %pool_devices;	# location of devices
+	my @all_pool_devs;	# All devices in pools
+	for my $pool (@pools) {
+		chomp $pool;
+		my @pool_devs; # string with the pools in it
+		my @lines = `btrfs filesystem show $pool`;
+		for my $line (@lines) {
+			chomp $line;
+			if ( $line =~ /devid/) {
+				$line =~ s/^\s+(devid.*)/$1/;
+				my @components = split(' ', $line);
+				my $pnum = $components[1];
+				my $dev = $components[-1];
+				push @all_pool_devs, $dev;
+				push @pool_devs, $dev;
+			}
+		}
+		$pool_devices{$pool} = join(' ', @pool_devs);
+	}
+	my $all_pool_devs = join(' ', @all_pool_devs);
+	return (\%pool_devices, $all_pool_devs);
+}
+sub drive_temps {
+	# Return the temperatures of the drives in the string provided
+	my $devs = shift;
+	my @temps = `hddtemp $devs`;
+	my %drive_temps;
+	for my $temp (@temps) {
+		chomp $temp;
+		my ($dev, $model, $temp) = split(': ', $temp);
+		$drive_temps{$dev} = $temp;
+	}
+	return \%drive_temps;
+}
