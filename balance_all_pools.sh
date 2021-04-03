@@ -79,7 +79,8 @@ do
 		then
 			if [ $NO_BALANCE -eq 1 ]
 			then
-				time $CMD
+				time `RESULTS=`$CMD``
+				echo $RESULTS | tail -1 | sed 's/^\(.* relocate \)\([0-9]\+\) out of \([0-9]\+\) chunks/\2, \3/'
 			else
 				echo "Balance already running on $POOL."
 			fi
