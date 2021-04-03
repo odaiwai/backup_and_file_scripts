@@ -15,6 +15,11 @@ use DateTime;
 #   - Send all local snapshots if the backup vol is available, and they're not already there
 #   - trim the local snspshots if required
 #
+# 20201121:  Backing up to a remote machine
+# https://www.kubuntuforums.net/showthread.php/72676-Backing-up-to-a-networked-computer-using-BTRFS-and-SSH
+#	- Need passwordless SSH Access
+#	- change the send receive pair to be something like: 
+#		btrfs send -q -p $last_backup $this_backup | ssh $remote_host "btrfs receive $remote"
 my $for_real = 1;
 my $verbose = 0;
 my $first_run = 0;

@@ -6,7 +6,7 @@
 LIMIT=1
 PASSES=1
 PAUSE=10
-USAGE=100
+USAGE=0
 FOR_REAL=1
 POOLS=""
 I_AM=`whoami`
@@ -85,6 +85,10 @@ do
 			fi
 		fi
 	done
-	echo "Status: $?, sleeping for $PAUSE seconds..."
+	if [[ $PASS -lt $PASSES ]]
+	then
+		# Don't pause on the last pass...
+		echo "Status: $?, sleeping for $PAUSE seconds..."
+	fi
 	sleep $PAUSE
 done

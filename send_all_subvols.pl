@@ -22,7 +22,7 @@ for my $this_subvol (@home_subvols) {
 	if ( $already_there > 0 ) {
 		print "/backup/$this_subvol - $already_there\n";
 	} else {
-		my $cmd = "btrfs send -p /home/$previous_subvol /home/$this_subvol | btrfs receive /backup"; 
+		my $cmd = "btrfs send -v -p /home/$previous_subvol /home/$this_subvol | btrfs receive /backup"; 
 		print "$cmd\nWaiting...";
 		sleep 10;
 		print "\n";

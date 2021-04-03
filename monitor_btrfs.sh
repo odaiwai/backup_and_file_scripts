@@ -33,7 +33,15 @@ do
 		else
 			echo "Finished: $SCRUB_RESULT"
 		fi
-	done
+		
+		CMD="btrfs balance status $POOL"
+		RESULT=`$CMD`
+		BAL_STATUS=`$CMD | grep unning | wc -l`
+		if [[ $BAL_STATUS -gt 0 ]]
+		then
+			echo "$RESULT"
+		fi
+done
 
 	echo -n "sleeping for $PAUSE seconds..."
 	sleep $PAUSE
