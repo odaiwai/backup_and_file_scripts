@@ -4,27 +4,39 @@ use warnings;
 
 # script to copy from /backup/home to /home
 my $verbose = 1;
-my $cp_options = "au";
-$cp_options .= "v" if $verbose;
+my $dry_run = 0;
+my $do_all = 0;
+my $pause = 5;
+my $rsync_options = "--stats --compress --recursive --times --perms --links --human-readable --update --archive";
+$rsync_options .= " --progress --info=progress2" if $verbose;
+$rsync_options .= " --dry-run" if $dry_run;
 
-#my @dirs = `ls -tr /backup/home | sed '/odaiwai/d'`;
-#my $result = copy_dirs("/backup/home", @dirs);
-my @dirs2 = `ls -atr /backup/home/odaiwai`;
-my $result = copy_dirs("/backup/home/odaiwai", @dirs2);
+my $src_dir = "/backup/BACKUP.20210415_0338/odaiwai";
+my $home_dir = "/home/odaiwai";
+my @dirs = return_dirs();
 
-## subs
-sub copy_dirs {
-	my $root = shift;
-	while (my $dir = shift ) {
-		chomp $dir;
-		print "copying $root/$dir to /home/$dir...";
-		if ($dir eq "BACKUP") {
-			print "$dir: Not this one\n";
-		} else {
-			print "\n";
-			my $result = `time rsync -aHAX --progress $root/$dir /home/odaiwai`;
-			print "$result\n";
-		}
+for my $dir (@dirs) {
+	chomp $dir;
+	print "copying $src_dir/$dir to $home_dir ...\n";
+	my $cmd = "rsync $rsync_options $src_dir/$dir $home_dir";
+	print "$cmd\n";
+	my $result = `time $cmd`;
+	print "$result\n";
+	if ( $pause >= 0) {
+		print "Waiting for $pause ...";
+		sleep $pause;
+		print "\n";
 	}
-	return 1;
+}
+
+#subs
+sub return_dirs {
+	my @dirs;
+	if ( $do_all) {
+		@dirs = `ls -atr $src_dir`;
+	} else {
+		#@dirs = qw/Documents Games Pictures RaspberryPi webcam iPhone_utilities projects/; # list of dirs to work with
+		@dirs = qw/Downloads Music Pictures/; # list of dirs to work with
+	}
+	return @dirs;
 }

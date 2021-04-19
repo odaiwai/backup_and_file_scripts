@@ -2,27 +2,39 @@
 use strict;
 use warnings;
 
-my @home_subvols   = `btrfs subvol list /home | cut -d' ' -f9`;
-my @backup_subvols = `btrfs subvol list /backup | cut -d' ' -f9`;
+# In the normal mode of operation, we're copying subvols from /home to /backup
+my $normal = 1;
 
-my $previous_subvol = shift @home_subvols;
+if ( $normal ) {
+	# Normal mode of operation: copy from /home to /backup
+	my $source = "/home";
+	my $dest = "/backup";
+} else {
+	my $source = "/backup";
+	my $dest = "/home";
+}
+
+my @source_subvols   = `btrfs subvol list $source | cut -d' ' -f9`;
+my @dest_subvols = `btrfs subvol list $dest | cut -d' ' -f9`;
+
+my $previous_subvol = shift @source_subvols;
 chomp $previous_subvol;
 
-for my $this_subvol (@home_subvols) {
+for my $this_subvol (@source_subvols) {
 	chomp $this_subvol;
 	# Check if already there, if so do nothing
 	my $already_there = 0;
-	for my $backup (@backup_subvols) {
-		chomp $backup;
-		if ( $this_subvol eq $backup ) {
-			# Subvol is already on the backup - ignore
+	for my $dest (@dest_subvols) {
+		chomp $dest;
+		if ( $this_subvol eq $dest ) {
+			# Subvol is already on the dest - ignore
 			$already_there++ ;
 		}
 	}
 	if ( $already_there > 0 ) {
-		print "/backup/$this_subvol - $already_there\n";
+		print "$dest/$this_subvol - $already_there\n";
 	} else {
-		my $cmd = "btrfs send -v -p /home/$previous_subvol /home/$this_subvol | btrfs receive /backup"; 
+		my $cmd = "btrfs send -v -p $source/$previous_subvol $source/$this_subvol | btrfs receive $dest"; 
 		print "$cmd\nWaiting...";
 		sleep 10;
 		print "\n";

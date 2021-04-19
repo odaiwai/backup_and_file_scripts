@@ -43,6 +43,7 @@ do
 		fi
 done
 
+# btrfs fi show /home
 	echo -n "sleeping for $PAUSE seconds..."
 	sleep $PAUSE
 	echo

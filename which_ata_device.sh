@@ -29,8 +29,9 @@ for i in /sys/block/sd*; do
      if echo $Path | grep -q '/usb[0-9]*/'; then
        echo "(Device $ID is not an ATA device, but a USB device [e. g. a pen drive])"
      else
-	   serial=`smartctl -a /dev/$ID | grep Serial`
-       echo $ID: ata$(< "$Path/host$HostMain/scsi_host/host$HostMain/unique_id").$HostMid$HostSub $serial 
+	   serial=`smartctl -a /dev/$ID | grep "Serial Number" | cut -d":" -f2`
+	   model=`smartctl -a /dev/$ID | grep "Device Model" | cut -d":" -f2`
+       echo $ID: ata$(< "$Path/host$HostMain/scsi_host/host$HostMain/unique_id").$HostMid$HostSub $serial $model
      fi
 
   done

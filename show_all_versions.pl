@@ -1,8 +1,10 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use String::ShellQuote;
 
 # Script to find all versions of a file in the current snapshots
+# This should not need the file to exist in the current snapshot
 # 20181212 Dave O'Brien
 
 my $verbose = 1;
@@ -14,13 +16,21 @@ my @snapshots = list_all_snapshots($filesystem);
 
 foreach my $file (@ARGV) {
 	chomp $file;
+	$file = shell_quote $file;
 	print "$file\n";
+	my ($perms, $size, $date, $time, $filename) ;
 
-	my ($perms, $size, $date, $time, $filename) = fileinfo($file);
-	print "$perms, $size, $date, $time: $filename\n" if $verbose;
+	if ( -f $file) {
+		($perms, $size, $date, $time, $filename) = fileinfo($file);
+		print "$perms, $size, $date, $time: $filename\n" if $verbose;
+	} else {
+		print "$file not in current filesystem\n";
+	}
 	
 	my $fullpath = `realpath --relative-to $filesystem $file`;
 	chomp $fullpath;
+	$fullpath = shell_quote $fullpath;
+	print "$fullpath\n";
 
 	foreach my $snapshot (@snapshots) {
 		my $snappath = "$filesystem/$snapshot/$fullpath";
@@ -29,6 +39,8 @@ foreach my $file (@ARGV) {
 			if (($date ne $s_date) || ($time ne $s_time) || ($size != $s_size) ) {
 				print "\t$s_size, $s_date, $s_time: $s_filename\n" if $verbose;
 			}
+		} else {
+			print "$fullpath not in $snapshot\n";
 		}
 	}
 }
