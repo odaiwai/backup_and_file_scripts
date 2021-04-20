@@ -27,7 +27,7 @@ my $alt_filesystem = "/backup";
 my @snapshots = get_list_of_snapshots($filesystem);
 my $verbose = 1;
 my $for_real = 1;
-my $alt = 1;
+my $alt = 0;
 
 #print @snapshots . "\n";
 # Set snapshots to RW
@@ -58,16 +58,14 @@ for my $file (@files) {
 	my $allfiles = join " ", @file_versions;
 	print "Delete $allfiles\n";
 	for my $version (@file_versions) {
-		my $cmd = "ls -ltr ";
+		$version = shell_quote $version;
+		my $cmd = "ls -ltr $version";
 		if ( $for_real ) {
-			$cmd = "rm -rf ";
+			$cmd = "rm -rf $version";
 		} 
-		$cmd .= shell_quote $version;
-		if ( -e shell_quote $version ) {
-			print "$cmd\n" if $verbose;
-			my $result = do_cmd($cmd);
-			print "$result\n" if $verbose;
-		}
+		print "$cmd\n" if $verbose;
+		my $result = do_cmd($cmd);
+		print "$result\n" if $verbose;
 	}
 }
 
