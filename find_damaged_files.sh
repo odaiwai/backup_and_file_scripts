@@ -4,11 +4,17 @@ use strict;
 use warnings;
 my $for_real = 1;
 #
-# check the dmesg log for BTRFS errors and delete the file
+# check the dmesg log for BTRFS errors after a scrub and delete the file
 # should do a:
 #	btrfs filesystem sync /home 
 # after
 
+# other way to root out csum issues:
+# https://www.reddit.com/r/btrfs/comments/hcllay/how_to_cleanup_after_btrfs_scrub_checksum_errors/
+# cd ~/; find . -execdir cat {} + > /dev/null
+# this tries to cat each file in the filesystem to /dev/null
+# it will trigger a csum error in dmesg if there's a problem
+# 
 # better regexp:
 #           `dmesg | grep path: | sed -E 's/^.*\(path: (.*)\)$/\1/;' | sort |uniq > damaged_files.txt`;
 my %top_levels;
@@ -23,10 +29,12 @@ for my $line (@lines) {
 	}
 if  ( $line =~ /corrupt ([0-9]+)/ ) {
 		my $inode = $1;
-		my $file = `sudo btrfs inspect-internal inode-resolve $inode /home`;
-		#print "INODE: $inode -> $file\n";
-		chomp $file;
-		$files{$file}++;
+		my $result = `sudo btrfs inspect-internal inode-resolve $inode /home 2>&1`;
+		if ( $? == 0 ) {
+			chomp $result;
+			print "INODE: $inode -> $result\n";
+			$files{$result}++;
+		}
 	}
 }
 print "\n";
