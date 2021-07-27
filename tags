@@ -23,14 +23,15 @@ check_status	check_scrub_status.pl	/^sub check_status {$/;"	s
 check_status	enable_quotas.pl	/^sub check_status {$/;"	s
 checksum_from_filepath	compare_lists.pl	/^sub checksum_from_filepath {$/;"	s
 comma_separated_thousands	compare_lists.pl	/^sub comma_separated_thousands {$/;"	s
-copy_dirs	restore_home.pl	/^sub copy_dirs {$/;"	s
 dbdo	compare_lists.pl	/^sub dbdo {$/;"	s
 dbdo	prepare_restore_dbase.pl	/^sub dbdo {$/;"	s
+devices_in_pools	btrfs_fsstats.pl	/^sub devices_in_pools {$/;"	s
 dict_of_snapshots	parse_qgroup.py	/^def dict_of_snapshots(filesystem):$/;"	f
 do_cmd	dedupe_a_file.pl	/^sub do_cmd {$/;"	s
 do_cmd	delete_from_all_snapshots.pl	/^sub do_cmd {$/;"	s
 do_cmd	make_backup_btrfs.pl	/^sub do_cmd {$/;"	s
 do_cmd	make_backup_ext4.pl	/^sub do_cmd {$/;"	s
+drive_temps	btrfs_fsstats.pl	/^sub drive_temps {$/;"	s
 drop_all_tables	compare_lists.pl	/^sub drop_all_tables {$/;"	s
 drop_all_tables	prepare_restore_dbase.pl	/^sub drop_all_tables {$/;"	s
 escape_filepath	compare_lists.pl	/^sub escape_filepath {$/;"	s
@@ -65,6 +66,7 @@ querydb	prepare_restore_dbase.pl	/^sub querydb {$/;"	s
 re	parse_qgroup.py	/^import re$/;"	i
 return_all_backups	make_backup_btrfs.pl	/^sub return_all_backups {$/;"	s
 return_btrfs_filesystems	parse_qgroup.py	/^def return_btrfs_filesystems():$/;"	f
+return_dirs	restore_home.pl	/^sub return_dirs {$/;"	s
 return_latest_backup	make_backup_btrfs.pl	/^sub return_latest_backup {$/;"	s
 row_from_query	compare_lists.pl	/^sub row_from_query {$/;"	s
 row_from_query	prepare_restore_dbase.pl	/^sub row_from_query {$/;"	s
