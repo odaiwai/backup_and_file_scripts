@@ -15,13 +15,13 @@ open ( my $fh, "<", $update_conf);
 while (my $line = <$fh>) {
 	chomp $line;
 	print "$line\n" if $verbose;
-	
+
 	if ( $line =~ /^([A-Z_]+) = \"(.*)\"$/) {
 		my $keyword = $1;
 		my $values  = $2;
 		print "\t$keyword = $values\n" if $verbose;
-		
-		# handle the final PRUNEPATHS
+        #
+        # handle the final PRUNEPATHS
 		if ( $keyword eq "PRUNEPATHS" ) {
 			my @newpaths;
 			my @paths = split " ", $values;
@@ -32,13 +32,11 @@ while (my $line = <$fh>) {
 					push @newpaths, $path;
 				}
 			}
-			
 			# Add the list of snapshots to the list
 			push @newpaths, list_all_snapshots("/home");
 			$values = join " ", @newpaths;
 			print "\t$keyword = $values\n" if $verbose;
 		}
-		
 		# store the values
 		$settings{$keyword} = $values;
 	}
