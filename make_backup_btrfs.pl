@@ -68,6 +68,7 @@ print "This Backup: $this_backup\n" if $verbose;
 # Stage 1
 # check if the directory snapshot exists, if not we have to create it
 # if the read only subvol $local/$prefix doesn't exist, make it
+## Already have a local backup so send that instead?
 printlog ($log, "1. making a local backup...");
 if ( !(-d $last_backup)) {
     printlog( $log, "\t1.1 $last_backup doesn't exist: making initial backup of $local");
