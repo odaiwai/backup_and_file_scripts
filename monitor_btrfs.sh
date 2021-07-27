@@ -2,7 +2,7 @@
 
 
 PASSES=100
-PAUSE=60
+PAUSE=300
 I_AM=`whoami`
 if [[ $I_AM = "root" ]]
 then
