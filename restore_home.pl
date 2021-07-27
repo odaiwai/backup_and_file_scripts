@@ -40,10 +40,12 @@ sub return_dirs {
 		push @dirs, "conor/windows_backup";
 		push @dirs, "odaiwai/Downloads/Wii";
 		push @dirs, "odaiwai/Music/iTunes";
+		push @dirs, "odaiwai/Music/Games";
 		push @dirs, "odaiwai/Pictures/Ricoh_GX200";
 		push @dirs, "odaiwai/Music/aiff_music";
 		push @dirs, "odaiwai/Documents/Transport_Planning";
 		push @dirs, "odaiwai/Pictures/iPhoto Library";
+		push @dirs, "odaiwai/Pictures/Photos Library.photoslibrary";
 		push @dirs, "odaiwai/Music/SXSW_2012_Showcasing_Artists_Part2";
 		push @dirs, "odaiwai/Pictures/Photos Library.photoslibrary";
 		push @dirs, "odaiwai/Music/SXSW_2006_Showcasing_Artists_-_Release_1";
