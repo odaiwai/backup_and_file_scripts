@@ -4,19 +4,21 @@ use warnings;
 
 # In the normal mode of operation, we're copying subvols from /home to /backup
 my $normal = 1;
+my $source = "/home";
+my $dest = "/backup";
 
-if ( $normal ) {
-	# Normal mode of operation: copy from /home to /backup
-	my $source = "/home";
-	my $dest = "/backup";
-} else {
+if ( !$normal ) {
 	my $source = "/backup";
 	my $dest = "/home";
 }
 
+# Get the list of subvols
 my @source_subvols   = `btrfs subvol list $source | cut -d' ' -f9`;
 my @dest_subvols = `btrfs subvol list $dest | cut -d' ' -f9`;
 
+# This works when there are common subvols.
+# When there aren't it is required to send one subvol manually with:
+# btrfs send $source/%subvol | btrfs receive $dest
 my $previous_subvol = shift @source_subvols;
 chomp $previous_subvol;
 
