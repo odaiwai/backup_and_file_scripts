@@ -39,11 +39,6 @@ while (my $arg = shift @ARGV) {
 
 print "Backing up from $local to $remote as $prefix\n" if $verbose;
 
-my $backup_vol_present = `df $remote | wc -l`;
-if ($backup_vol_present == 0) {
-    print "Backup Volume not present. Cannot Send Snapshots.\n" if $verbose;
-    exit;
-}
 my $logfile = "/root/backups/backup.log";
 open ( my $log, ">", $logfile) or die "Can't open $logfile\n";
 
@@ -77,6 +72,12 @@ if ( !(-d $last_backup)) {
     $last_backup = $this_backup;
 } else {
     printlog ($log, "\t1.2 $last_backup already exists.");
+}
+
+my $backup_vol_present = `df $remote | wc -l`;
+if ($backup_vol_present == 0) {
+    print "Backup Volume not present. Cannot Send Snapshots.\n" if $verbose;
+    exit;
 }
 
 # Stage 2 if $local/$prefix exists and $remote$local/$prefix doesn't, send|receive it
