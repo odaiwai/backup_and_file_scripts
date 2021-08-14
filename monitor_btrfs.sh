@@ -3,6 +3,7 @@
 
 PASSES=100
 PAUSE=300
+INTERVAL=5
 I_AM=`whoami`
 if [[ $I_AM = "root" ]]
 then
@@ -44,7 +45,10 @@ do
 done
 
 # btrfs fi show /home
-	echo -n "sleeping for $PAUSE seconds..."
-	sleep $PAUSE
-	echo
+    for NOW in `seq $PAUSE -$INTERVAL 0`
+    do
+	    echo -ne "sleeping for $NOW seconds...\r"
+    	sleep $INTERVAL
+    done
+    echo
 done
