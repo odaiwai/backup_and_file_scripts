@@ -26,15 +26,17 @@ my $filesystem = "/home";
 my $alt_filesystem = "/backup";
 my @snapshots = get_list_of_snapshots($filesystem);
 my $verbose = 1;
-my $for_real = 1;
-my $alt = 0;
+my $for_real = 0;
+my $main = 0;
+my $alt = 1;
 
 #print @snapshots . "\n";
 # Set snapshots to RW
 if ( $for_real) {
 	print "Set snapshots to RW...\n";
 	for my $snapshot (@snapshots) {
-		my $result = set_property($filesystem, "ro false", $snapshot);
+        print "$filesystem/$snapshot...\n" if $verbose;
+		my $result = set_property($filesystem, "ro false", $snapshot) if $main;
 		$result = set_property($alt_filesystem, "ro false", $snapshot) if $alt;
 	}
 }
@@ -49,9 +51,9 @@ for my $file (@files) {
 	my @file_versions;
 	for my $snapshot (@snapshots) {
 		chomp $snapshot;
-		push @file_versions, "$filesystem/$snapshot$path";
+		push @file_versions, "$filesystem/$snapshot$path" if $main;
 		push @file_versions, "$alt_filesystem/$snapshot$path" if $alt;
-		print "\t$filesystem/$snapshot$path\n" if $verbose;
+		print "\t$filesystem/$snapshot$path\n" if $verbose and $main;
 		print "\t$alt_filesystem/$snapshot$path\n" if $verbose and $alt;
 	}
 
@@ -69,10 +71,11 @@ for my $file (@files) {
 	}
 }
 
-if ( $for_real) {
+if ( $for_real or 1) {
 	print "Set snapshots to RO...\n";
 	for my $snapshot (@snapshots) {
-		my $result = set_property($filesystem, "ro true", $snapshot);
+        print "$filesystem/$snapshot..\n";
+		my $result = set_property($filesystem, "ro true", $snapshot) if $main;
 		$result = set_property($alt_filesystem, "ro true", $snapshot) if $alt;
 	}
 }
@@ -101,7 +104,7 @@ sub set_property {
 
 sub do_cmd {
 	my $cmd = shift;
-	#print "$cmd\n" if $verbose;
+	print "$cmd\n" if $verbose;
 	my $result = "NULL"; 
 	$result = `$cmd` if $for_real;
 	chomp $result;

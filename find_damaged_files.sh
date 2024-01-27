@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-my $for_real = 1;
+my $for_real = 0;
 #
 # (c) dave o'brien 20210420
 #
@@ -24,6 +24,7 @@ my $for_real = 1;
 #
 my %top_levels;
 my %files;
+my %results;
 print "Reading dmesg...";
 my @lines = `dmesg -T | grep BTRFS`;
 for my $line (@lines) {
@@ -93,3 +94,4 @@ my @top_levels = keys(%top_levels);
 for my $top_level (@top_levels) {
 		print "$top_level ($top_levels{$top_level})\n";
 }
+

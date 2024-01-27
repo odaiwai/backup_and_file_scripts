@@ -6,6 +6,7 @@ use warnings;
 my $normal = 1;
 my $source = "/home";
 my $dest = "/backup";
+my $sleep = 10;
 
 if ( !$normal ) {
 	my $source = "/backup";
@@ -36,12 +37,13 @@ for my $this_subvol (@source_subvols) {
 	if ( $already_there > 0 ) {
 		print "$dest/$this_subvol - $already_there\n";
 	} else {
-		my $cmd = "btrfs send -v -p $source/$previous_subvol $source/$this_subvol | btrfs receive $dest"; 
-		print "$cmd\nWaiting...";
-		sleep 10;
+		my $cmd = "btrfs send -v --proto 0 -p $source/$previous_subvol $source/$this_subvol | btrfs receive $dest"; 
 		print "\n";
 		my $result = `time $cmd`; 
 		print "$result \n";
+		print "$cmd\nWaiting $sleep seconds (ctrl-C here will stop safely)...";
+		sleep ($sleep);
+        print "Going round again...\n";
 	}
 	$previous_subvol = $this_subvol;
 }

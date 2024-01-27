@@ -18,22 +18,22 @@ do
 	date
 	# Rescan the pools inside the loop
 	POOLS=`mount| grep btrfs | cut -d' ' -f3`
-	df -h $POOLS
+	df -h / $POOLS
 	/home/odaiwai/src/backup_and_file_scripts/btrfs_fsstats.pl
 	for POOL in $POOLS
 	do
 		CMD="btrfs scrub status $POOL"
 		echo -n "# $CMD: "
-		RESULT=`$CMD`
-		SCRUB_STATUS=`$CMD | grep unning | wc -l`
-		SCRUB_RESULT=`$CMD | grep summary`
-		if [[ $SCRUB_STATUS -gt 0 ]]
-		then
-			echo "Running..."
-			echo "$RESULT"
-		else
-			echo "Finished: $SCRUB_RESULT"
-		fi
+        RESULT=`$CMD`
+        SCRUB_STATUS=`$CMD | grep unning | wc -l`
+        SCRUB_RESULT=`$CMD | grep summary`
+        if [[ $SCRUB_STATUS -gt 0 ]]
+         then
+                echo "Running..."
+                echo "$RESULT"
+        else
+                echo "Finished: $SCRUB_RESULT"
+        fi
 		
 		CMD="btrfs balance status $POOL"
 		RESULT=`$CMD`
@@ -44,6 +44,7 @@ do
 		fi
 done
 
+sensors | grep -E  '(Core|[0-9]{2,} RPM)'
 # btrfs fi show /home
     for NOW in `seq $PAUSE -$INTERVAL 0`
     do

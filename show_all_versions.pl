@@ -8,7 +8,8 @@ use String::ShellQuote;
 # 20181212 Dave O'Brien
 
 my $verbose = 1;
-my $filesystem = "/home";
+# my $filesystem = "/home";
+my $filesystem = "/backup";
 my @snapshots = list_all_snapshots($filesystem);
 # Algorithm:
 # For each file on stdin, show the distinct versions of it in the snapshots.
@@ -16,8 +17,14 @@ my @snapshots = list_all_snapshots($filesystem);
 
 foreach my $file (@ARGV) {
 	chomp $file;
+
+    # handle the case of the file being in the backups
+    #if ( $file =~ /(/backup/BACKUP\.[0-9_]+)\/(.*)$/) {
+    #    $file = $2;
+    #}
+
 	$file = shell_quote $file;
-	print "$file\n";
+	print "F:$file\n";
 	my ($perms, $size, $date, $time, $filename) ;
 
 	if ( -f $file) {
@@ -26,11 +33,11 @@ foreach my $file (@ARGV) {
 	} else {
 		print "$file not in current filesystem\n";
 	}
-	
+
 	my $fullpath = `realpath --relative-to $filesystem $file`;
 	chomp $fullpath;
 	$fullpath = shell_quote $fullpath;
-	print "$fullpath\n";
+	print "FP:$fullpath\n";
 
 	foreach my $snapshot (@snapshots) {
 		my $snappath = "$filesystem/$snapshot/$fullpath";
@@ -48,7 +55,7 @@ foreach my $file (@ARGV) {
 sub fileinfo {
 	# Get the relevant data on a file
 	my $file = shift;
-	
+
 	my $data = `ls -l --time-style=long-iso $file`;
 	my @data = split " ", $data;
 	my $perms  = shift @data;
@@ -66,7 +73,7 @@ sub list_all_snapshots {
 	# find all the snapshots in the current filesystem
 	my $filesystem = shift;
 	my @snapshots;
-	
+
 	my @subvolumes = `sudo btrfs subvolume list $filesystem`;
 	foreach my $subvolume (@subvolumes) {
 		if ( $subvolume =~ /^ID ([0-9]+) gen ([0-9]+) top level ([0-9]+) path (.*)$/ ) {

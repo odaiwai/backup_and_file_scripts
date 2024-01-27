@@ -9,6 +9,7 @@
 # save original IFS
 OLDIFS="$IFS"
 
+echo -e "ID\t Host\t Serial  Num.\t\t Model"
 for i in /sys/block/sd*; do 
  readlink $i |
  sed 's^\.\./devices^/sys/devices^ ;

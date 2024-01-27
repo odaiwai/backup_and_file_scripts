@@ -5,7 +5,7 @@
 *.out
 *.bak
 
-html
+*.html
 
 *.tdy
 
@@ -19,3 +19,6 @@ remote_list_with_size
 
 restore_list\.txt
 scrub_errors.txt
+btdu-static-x86_64
+*.txt
+*.swp
