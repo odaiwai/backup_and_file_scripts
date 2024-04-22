@@ -10,9 +10,10 @@
 declare -a last_days=("0131" "0228" "0229" "0330" "0430" "0531" "0630" \
                       "0731" "0831" "0930" "1031" "1130" "1231")
 BASEDIR="/home/BACKUP"
-for year in `seq 2019 2023`; do
-    for month in `seq -f'%02.0f' 1 12`; do
-        for day in `seq -f '%02.0f' 1 31`; do
+for year in $(seq 2019 2023); do
+    for month in $(seq -f'%02.0f' 1 12); do
+        for day in $(seq -f '%02.0f' 1 31); do
+            # If the date is in the list of last days:
             if [[ "${last_days[*]}" =~ "$month$day" ]]; then
                 echo "Saving $year$month$day"
             else
