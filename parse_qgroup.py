@@ -15,6 +15,9 @@ import subprocess
 #   Implement a GUI for this using:
 #   https://wiki.wxpython.org/Getting%20Started#Building_a_simple_text_editor
 
+# Constants
+VERBOSE = True
+
 
 class Filesystem:
     def __init__(self, label, uuid, mountpoint):
@@ -27,7 +30,16 @@ class Filesystem:
 
 
 class Snapshot:
-    def __init__(self, snap_id, gen, parent, groupid, path, excl_size, refr_size):
+    def __init__(self,
+                 filesystem: str,
+                 snap_id: int,
+                 gen: int,
+                 parent: int,
+                 groupid: int,
+                 path: str,
+                 excl_size: int,
+                 refr_size: int):
+        self.filesystem = filesystem
         self.snap_id = snap_id
         self.gen = gen
         self.parent = parent
@@ -37,9 +49,10 @@ class Snapshot:
         self.refr_size = refr_size
 
     def __str__(self):
-        return (f'ID {self.snap_id} parent {self.parent} GroupID {self.groupid}'
-                f' {self.path}, {pretty_bytes(self.excl_size)},'
-                f' {pretty_bytes(self.refr_size)}')
+        return (f'ID {self.parent}/{self.snap_id} GroupID {self.groupid}'
+                f' {self.filesystem}/{self.path},'
+                f' EX: {pretty_bytes(self.excl_size)},'
+                f' RF: {pretty_bytes(self.refr_size)}')
 
 
 def pretty_bytes(size: int, scale: int = 0, long: bool = False) -> str:
@@ -83,13 +96,27 @@ def pretty_bytes(size: int, scale: int = 0, long: bool = False) -> str:
     return pretty_size
 
 
+def run_external_cmd(cmd: list) -> subprocess.CompletedProcess:
+    """
+    Run and external command and return the results.
+
+    :param cmd: command in the form of a list
+    :return: Completed process instance
+    """
+    result = subprocess.run(cmd,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            text=True,
+                            check=True)
+    # print('OUT:', result.stdout)
+    # print('ERR:', result.stderr)
+    return result
+
+
 def btrfs_mounted_fs() -> list:
     # Look for all btrfs mounted_fs
     mounted_fs = []
-    mounts = subprocess.run('mount',
-                            stdout=subprocess.PIPE,
-                            text=True,
-                            check=True)
+    mounts = run_external_cmd('mount')
     for mount in mounts.stdout.split('\n'):
         # print(mount)
         components = mount.rstrip('\n').split(' ')
@@ -100,71 +127,64 @@ def btrfs_mounted_fs() -> list:
     return mounted_fs
 
 
-def dict_of_snapshots(filesystem):
-    # Parse the snapshots for a given filesystem
+def dict_of_snapshots(filesystem: list) -> dict:
+    """Return a dict of the snapshots for a given filesystem."""
     # Returns a dict of {'id': 'snapshot_object'...}
     snapshots = {}
-    root_snapshot = Snapshot(5, 0, 0, 0, filesystem, 0, 0)
-    snapshots['5'] = root_snapshot
+    snapshots['5'] = Snapshot(filesystem, 5, 0, 0, 0, '/', 0, 0)
     parents = {}
     parents[5] = 1
     cmd = ['sudo', 'btrfs', 'subvolume', 'list', filesystem]
-    subvols = subprocess.run(cmd,
-                             stdout=subprocess.PIPE,
-                             text=True,
-                             check=True)
+    subvols = run_external_cmd(cmd)
     for subvol in subvols.stdout.split('\n'):
-        components = subvol.split()
-        # print(components)
-        if len(components) > 1:
-            snap_id = components[1]
-            gen = components[3]
-            parent_id = components[6]
-            path = f'{filesystem}/{components[8]}'
-            snapshot = Snapshot(snap_id, gen, parent_id, 0, path, 0, 0)
+        if len(subvol) > 0:
+            (_, snap_id, _, gen, _, _, parent_id, _, path) = subvol.split()
+            snapshot = Snapshot(filesystem, snap_id, gen,
+                                parent_id, 0, path, 0, 0)
             snapshots[snap_id] = snapshot
-            print('snapshot:', snapshot)
+            if VERBOSE:
+                print(f'snapshot: {snapshot}')
 
-    # print(snapshots)
+    print(f' There are: {len(snapshots)} snapshots.')
+    return snapshots
 
+
+def get_size_of_snapshots(filesystem: str, snapshots: dict) -> dict:
+    """Get the sizes of the filesystem snapshots."""
     # get the qgroups to determine the size of each snapshop
     cmd = ['sudo', 'btrfs', 'qgroup', 'show', '--raw', filesystem]
-    qgroup_show = subprocess.run(cmd,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE,
-                                 text=True,
-                                 check=True)
-    # print('OUT:', qgroup_show.stdout)
-    # print('ERR:', qgroup_show.stderr)
+    qgroup_show = run_external_cmd(cmd)
+
     err = 'ERROR: can\'t list qgroups: quotas not enabled'
     if err in qgroup_show.stderr.split('\n'):
         print('Quotas not enabled:', qgroup_show.stderr.split('\n')[0])
-
         cmd = ['sudo', 'btrfs', 'quota', 'enable', filesystem]
         print('Starting the quota enabling', cmd)
-        result = subprocess.run(cmd,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                text=True,
-                                check=True)
+        result = run_external_cmd(cmd)
         print('OUT:', result.stdout)
         print('ERR:', result.stderr)
     else:
         for snapshot in qgroup_show.stdout.split('\n'):
             # print('line:', snapshot)
-            components = snapshot.split()
-            if ('Qgroupid' not in components and
-                    r'--------' not in components):
-                print(components)
-                if len(components) > 1:
-                    ids = components.pop(0)
-                    qgroupid, snap_id = ids.split('/')
+            if len(snapshot) > 0:
+                (qgroupid, refer, excl, path) = snapshot.split()
+                if ('Qgroupid' not in qgroupid and
+                        r'--------' not in qgroupid):
+                    if VERBOSE:
+                        print(qgroupid, refer, excl, path)
+                    qgroupid, snap_id = qgroupid.split('/')
                     snapshot = snapshots[snap_id]
-                    # print(qgroupid, snap_id, components, snapshot)
-                    snapshots[snap_id].qgroupid = qgroupid
-                    snapshots[snap_id].refr_size = components[0]
-                    snapshots[snap_id].excl_size = components[1]
-                    # print('snapshot:', snapshots[snap_id])
+                    # check the path
+                    if path != snapshots[snap_id].path:
+                        print(('Paths don\'t match!'
+                               f' {path} - {snapshots[snap_id].path}'))
+                    else:
+                        # print(qgroupid, snap_id, components, snapshot)
+                        snapshots[snap_id].qgroupid = qgroupid
+                        snapshots[snap_id].refr_size = refer
+                        snapshots[snap_id].excl_size = excl
+                        if VERBOSE:
+                            print(f'snapshot: {snapshots[snap_id]}')
 
     return snapshots
 
@@ -174,13 +194,13 @@ def main(filesystems: list) -> None:
     print(filesystems)
     snapshots_by_filesystem = {}
     for filesystem in filesystems:
-        print('Filesystem', filesystem)
-        snapshots_by_filesystem[filesystem] = dict_of_snapshots(filesystem)
+        print(f'Retrieving snapshots for {filesystem}')
         snapshots = dict_of_snapshots(filesystem)
-        ids = snapshots.keys()
+        snapshots = get_size_of_snapshots(filesystem, snapshots)
+        for snap_id, snapshot in snapshots.items():
+            print(f'{snap_id}: {snapshot}')
+
         snapshots_by_filesystem[filesystem] = snapshots
-        for snap_id in ids:
-            print(snapshots[snap_id])
 
     # win = tk.Tk()
     # win.title('Parsing QGroups')
