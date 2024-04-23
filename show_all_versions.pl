@@ -8,8 +8,8 @@ use String::ShellQuote;
 # 20181212 Dave O'Brien
 
 my $verbose = 1;
-# my $filesystem = "/home";
-my $filesystem = "/backup";
+my $filesystem = "/home";
+# my $filesystem = "/backup";
 my @snapshots = list_all_snapshots($filesystem);
 # Algorithm:
 # For each file on stdin, show the distinct versions of it in the snapshots.
