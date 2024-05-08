@@ -1,6 +1,6 @@
 TARGET = /usr/local/bin
 SOURCE = $(shell pwd)
-FILES = $(shell ls | grep -E "\.(pl|sh)$$" )
+FILES = $(shell ls | grep -E "\.(py|pl|sh)$$" )
 
 all: install
 	@echo "Finished."
