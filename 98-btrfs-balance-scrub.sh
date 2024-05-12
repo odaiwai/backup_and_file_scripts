@@ -8,47 +8,23 @@ btrfs=/sbin/btrfs
 pools=$(mount | grep "btrfs.*rw" | cut -d" " -f3)
 # Balancing the FS can take a long time, and use a Lot of RAM.  Only do it while in attendance.
 
-if [ "$pools" != "" ]    ; then
-    echo "Found these pools mounted RW: $pools"
+if [ "$pools" != "" ]; then
+	echo "Found these pools mounted RW: $pools"
 
-    for pool in $pools; do
-<<<<<<< HEAD
-        echo "Starting $btrfs scrub start $pool"
-        # turn off the quotas before balancing
-        $btrfs quota disable $pool
-        $btrfs filesystem sync $pool
-        # Balance Data and Metadata - empty blocks only possibly unnecessary
-        $btrfs balance start -musage=0 -dusage=0 -v $pool
-        # Balance Data limit the number of of Blocks. Metadata is automatic now.
-        $btrfs balance start -dlimit=20 -v $pool
-        # Start the Scrub
-        $btrfs scrub start $pool
-||||||| parent of 2f9511c (Only Scrub RW mounted pools.)
-	echo "Starting $btrfs scrub start $pool"
-	# turn off the quotas before balancing
-	$btrfs quota disable $pool
-	$btrfs filesystem sync $pool
-	# Balance Data and Metadata - empty blocks only possibly unnecessary
-	$btrfs balance start -musage=0 -dusage=0 -v $pool
-	# Balance Data limit the number of of Blocks. Metadata is automatic now.
-	$btrfs balance start -dlimit=20 -v $pool
-	# Start the Scrub
-	$btrfs scrub start $pool
-=======
-	echo "Starting $btrfs scrub start $pool"
-	# turn off the quotas before balancing
-	$btrfs quota disable "$pool"
-	$btrfs filesystem sync "$pool"
-	# Balance Data and Metadata - empty blocks only possibly unnecessary
-	$btrfs balance start -musage=0 -dusage=0 -v "$pool"
-	# Balance Data limit the number of of Blocks. Metadata is automatic now.
-	$btrfs balance start -dlimit=20 -v "$pool"
-	# Start the Scrub
-	$btrfs scrub start "$pool"
->>>>>>> 2f9511c (Only Scrub RW mounted pools.)
-    done
+	for pool in $pools; do
+		echo "Starting $btrfs scrub start $pool"
+		# turn off the quotas before balancing
+		$btrfs quota disable "$pool"
+		$btrfs filesystem sync "$pool"
+		# Balance Data and Metadata - empty blocks only possibly unnecessary
+		$btrfs balance start -musage=0 -dusage=0 -v "$pool"
+		# Balance Data limit the number of of Blocks. Metadata is automatic now.
+		$btrfs balance start -dlimit=20 -v "$pool"
+		# Start the Scrub
+		$btrfs scrub start "$pool"
+	done
 
-    echo "BTRFS automatic scrub start done.  Use '$btrfs scrub status $pool' to see progress."
+	echo "BTRFS automatic scrub start done.  Use '$btrfs scrub status $pool' to see progress."
 fi
 
 # Wait for the pools to finish and reenable the quotas?
