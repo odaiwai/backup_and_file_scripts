@@ -1,5 +1,5 @@
 DY_TARGET = /etc/cron.daily
-WK_TARGET = /etc/cron.daily
+WK_TARGET = /etc/cron.weekly
 SOURCE = $(shell pwd)
 DAILY_FILES = make_backup_btrfs.pl make_backup_ext4.pl make_btrfs_daily_snapshot.pl
 
