@@ -51,13 +51,25 @@ while [[ $PASS -ne 0 ]]; do
 		CMD="$SUDO btrfs scrub status $POOL"
 		echo -n "# $CMD: "
 		RESULT=$($CMD)
-		SCRUB_STATUS=$($CMD | grep Status | sed 's/\s\+/ /')
-		SCRUB_RESULT=$($CMD | grep summary | sed 's/\s\+/ /')
+		SCRUB_STATUS=""
+		SCRUB_RESULT=""
+		BAL_STATUS=0
+		# Process the RESULT in a pipe to avoid running $CMD twice.
+		while read -r line; do
+			# echo "LINE: $line"
+			case "$line" in
+			*Status*)
+				SCRUB_STATUS=$(echo "$line" | sed 's/\s\+/ /')
+				if [[ $line =~ "running" ]]; then
+					BAL_STATUS=1
+				fi
+				;;
+			*Error*)
+				SCRUB_RESULT=$(echo "$line" | sed 's/\s\+/ /')
+				;;
+			esac
+		done <<<"$RESULT"
 		echo "$SCRUB_STATUS: $SCRUB_RESULT"
-
-		CMD="$SUDO btrfs balance status $POOL"
-		RESULT=$($CMD)
-		BAL_STATUS=$($CMD | grep -c unning)
 		if [[ $BAL_STATUS -gt 0 ]]; then
 			echo "$RESULT"
 		fi
