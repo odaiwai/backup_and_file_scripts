@@ -49,7 +49,6 @@ while [[ $PASS -ne 0 ]]; do
 	$SUDO /home/odaiwai/src/backup_and_file_scripts/btrfs_fsstats.pl
 	for POOL in $POOLS; do
 		CMD="$SUDO btrfs scrub status $POOL"
-		echo -n "# $CMD: "
 		RESULT=$($CMD)
 		SCRUB_STATUS=""
 		SCRUB_RESULT=""
@@ -69,8 +68,12 @@ while [[ $PASS -ne 0 ]]; do
 				;;
 			esac
 		done <<<"$RESULT"
-		echo "$SCRUB_STATUS: $SCRUB_RESULT"
-		if [[ $BAL_STATUS -gt 0 ]]; then
+		#
+		# Show the summary unless a scrub is running
+		if [[ $BAL_STATUS -eq 0 ]]; then
+			echo -n "# $CMD: "
+			echo "$SCRUB_STATUS: $SCRUB_RESULT"
+		else
 			echo "$RESULT"
 		fi
 	done
