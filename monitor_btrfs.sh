@@ -53,7 +53,7 @@ while [[ $PASS -ne 0 ]]; do
 		SCRUB_STATUS=""
 		SCRUB_RESULT=""
 		BAL_STATUS=0
-		# Process the RESULT in a pipe to avoid running $CMD twice.
+		# Process the RESULT using a HEREDOC to avoid running $CMD twice.
 		while read -r line; do
 			# echo "LINE: $line"
 			case "$line" in
