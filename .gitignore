@@ -5,6 +5,22 @@
 *.out
 *.bak
 
-html
+*.html
 
 *.tdy
+
+file_errors\.csv
+
+local_list
+
+remote_list
+
+remote_list_with_size
+
+restore_list\.txt
+scrub_errors.txt
+btdu-static-x86_64
+*.txt
+*.swp
+tags
+*.orig
