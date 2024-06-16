@@ -51,20 +51,25 @@ while [[ $PASS -ne 0 ]]; do
 		CMD="$SUDO btrfs scrub status $POOL"
 		RESULT=$($CMD)
 		SCRUB_STATUS=""
+		SCRUB_START=""
 		SCRUB_RESULT=""
 		BAL_STATUS=0
 		# Process the RESULT using a HEREDOC to avoid running $CMD twice.
 		while read -r line; do
 			# echo "LINE: $line"
+			line=$(echo "$line" | sed 's/\s\+/ /g')
 			case "$line" in
 			*Status*)
-				SCRUB_STATUS=$(echo "$line" | sed 's/\s\+/ /')
+				SCRUB_STATUS=$line
 				if [[ $line =~ "running" ]]; then
 					BAL_STATUS=1
 				fi
 				;;
+			*started*)
+				SCRUB_START=$line
+				;;
 			*Error*)
-				SCRUB_RESULT=$(echo "$line" | sed 's/\s\+/ /')
+				SCRUB_RESULT=$line
 				;;
 			esac
 		done <<<"$RESULT"
@@ -72,7 +77,7 @@ while [[ $PASS -ne 0 ]]; do
 		# Show the summary unless a scrub is running
 		if [[ $BAL_STATUS -eq 0 ]]; then
 			echo -n "# $CMD: "
-			echo "$SCRUB_STATUS: $SCRUB_RESULT"
+			echo "$SCRUB_START: $SCRUB_STATUS: $SCRUB_RESULT"
 		else
 			echo "$RESULT"
 		fi
