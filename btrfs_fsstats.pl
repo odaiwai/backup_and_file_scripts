@@ -33,7 +33,7 @@ my %drive_temps = %$drive_temps_ref;
 foreach my $pool (@pools) {
     chomp $pool;
 	#print "Pool: $pool\n";
-	
+
 	# Make the string of temperatures
 	my @pool_temps;
 	for my $dev (split(' ', $pool_devices{$pool})) {
@@ -43,7 +43,7 @@ foreach my $pool (@pools) {
 	#print Dumper(\@pool_temps);
 	my $pool_temps = join('/', @pool_temps);
 	#print Dumper($pool_temps);
-	
+
     my @results = `df -B1 $pool; btrfs fi df -b $pool`;
     foreach my $line (@results) {
         chomp $line;
@@ -52,7 +52,7 @@ foreach my $pool (@pools) {
 			$pool_size{$pool} = $total;
 			$pool_used{$pool} = $used;
 			$pool_mounts{$pool} = $device;
-			#print "$device: ($mount) $total/$used = $used_pct\n"; 
+			#print "$device: ($mount) $total/$used = $used_pct\n";
 		}
         if ( $line =~ /(Data|System|Metadata), (RAID[0-9]|single|DUP): total=([0-9]+), used=([0-9]+)/ ) {
 	            my $type   = $1;
@@ -69,7 +69,7 @@ foreach my $pool (@pools) {
 	#print Dumper(%pool_type_used);
 	my $total_used = $pool_type_used{$pool."_Data"} + $pool_type_used{$pool."_Metadata"} + $pool_type_used{$pool."_System"};
 	#print Dumper(%pool_type_bal);
-	my $pool_type_bal = join "/", ($pool_type_bal{$pool.'_Data'}, $pool_type_bal{$pool.'_Metadata'}, $pool_type_bal{$pool.'_System'}); 
+	my $pool_type_bal = join "/", ($pool_type_bal{$pool.'_Data'}, $pool_type_bal{$pool.'_Metadata'}, $pool_type_bal{$pool.'_System'});
 	my $pool_Data_pct = sprintf ("%0.1f", ( 100 * $pool_type_size{$pool."_Data"} / $pool_size{$pool} )) . "%";
 	my $pool_Meta_pct = sprintf ("%0.1f", ( 100 * $pool_type_size{$pool."_Metadata"} / $pool_size{$pool} )) . "%";
 	my $pool_Syst_pct = sprintf ("%0.1f", ( 100 * $pool_type_size{$pool."_System"} / $pool_size{$pool} )) . "%";
@@ -77,7 +77,7 @@ foreach my $pool (@pools) {
 	my $pretty_meta = pretty_bytes($pool_type_size{$pool."_Metadata"});
 	my $pretty_syst = pretty_bytes($pool_type_size{$pool."_System"});
 	my $pretty_total = pretty_bytes($total_used);
-	print "$pool\t($pool_mounts{$pool}) $pretty_total Data/Meta/Sys: ($pretty_data/$pretty_meta/$pretty_syst) ($pool_Data_pct/$pool_Meta_pct/$pool_Syst_pct) Balanced:($pool_type_bal), $pool_temps\n"; 
+	print "$pool\t($pool_mounts{$pool}) $pretty_total Data/Meta/Sys: ($pretty_data/$pretty_meta/$pretty_syst) ($pool_Data_pct/$pool_Meta_pct/$pool_Syst_pct) Balanced:($pool_type_bal), $pool_temps\n";
 }
 
 sub pretty_bytes {
@@ -132,7 +132,7 @@ sub devices_in_pools {
 sub drive_temps {
 	# Return the temperatures of the drives in the string provided
 	my $devs = shift;
-	my @temps = `hddtemp $devs`;
+	my @temps = `hddtemp -w $devs`;
 	my %drive_temps;
 	for my $temp (@temps) {
 		chomp $temp;
