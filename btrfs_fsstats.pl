@@ -17,7 +17,7 @@ my %pool_used;
 my %pool_type_size;
 my %pool_type_used;
 my %pool_type_bal;
-
+my %colcodes = define_colours();
 # Get the list of all devices in each pool
 my ($pool_devices_ref, $all_pool_devs) = devices_in_pools(@pools);
 my %pool_devices = %$pool_devices_ref;	# $pool_devices{$pool}{N} = device N in pool $pool
@@ -140,4 +140,36 @@ sub drive_temps {
 		$drive_temps{$dev} = $temp;
 	}
 	return \%drive_temps;
+}
+
+sub define_colours {
+    # Define the colours - yes it's got a u in it.
+    my @colours = (
+        'Default	\033[39m	\033[49m',
+        'Black	\033[30m	\033[40m',
+        'Dark red	\033[31m	\033[41m',
+        'Dark green	\033[32m	\033[42m',
+        'Dark yellow	\033[33m	\033[43m',
+        'Dark blue	\033[34m	\033[44m',
+        'Dark magenta	\033[35m	\033[45m',
+        'Dark cyan	\033[36m	\033[46m',
+        'Light gray	\033[37m	\033[47m',
+        'Dark gray	\033[90m	\033[100m',
+        'Red	\033[91m	\033[101m',
+        'Green	\033[92m	\033[101m',
+        'Orange	\033[93m	\033[103m',
+        'Blue	\033[94m	\033[104m',
+        'Magenta	\033[95m	\033[105m',
+        'Cyan	\033[96m	\033[106m',
+        'White	\033[97m	\033[107m',
+        'Reset \033[0m \033[0m');
+    my %colcodes;
+    for my $colour (@colours) {
+        if ( $colour =~ /^([A-z ]+)\s+([\\0-9\[a-z]+)\s+([\\0-9\[a-z]+)/) {
+            my ($colname, $fg_code, $bg_code) = ($1, $2, $3);
+            $colcodes{"$colname.fg"} = $fg_code;
+            $colcodes{"$colname.bg"} = $bg_code;
+        }
+    }
+    return %colcodes;
 }
